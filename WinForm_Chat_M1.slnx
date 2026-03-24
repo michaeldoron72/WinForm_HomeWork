@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".env" />
+    <File Path=".env_temp" />
   </Folder>
   <Project Path="WinForm_Chat_M1/WinForm_Chat_M1.csproj" />
 </Solution>
