@@ -4,4 +4,5 @@
     <File Path=".env_temp" />
   </Folder>
   <Project Path="WinForm_Chat_M1/WinForm_Chat_M1.csproj" />
+  <Project Path="WinForm_Chat_M2/WinForm_Chat_M2.csproj" Id="12e86fb8-113d-4fdf-94e5-f88ff597d40e" />
 </Solution>
