@@ -64,7 +64,6 @@ namespace WinForm_Chat_M2
                         AppendToHistory(chunk + "\n");
                     }
                 }
-                //AppendToHistory("AI: " + reply + "\n");
                 Console.WriteLine();
             }
             catch (Exception ex)
