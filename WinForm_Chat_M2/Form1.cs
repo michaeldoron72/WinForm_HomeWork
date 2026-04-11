@@ -87,7 +87,6 @@ namespace WinForm_Chat_M2
             rtbHistory.AppendText(message);
             rtbHistory.ScrollToCaret();
         }
-
         // btnSelectModel was removed from the UI; no handler needed
 
         private void cmbModel_SelectedIndexChanged(object? sender, EventArgs e)
