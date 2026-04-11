@@ -6,7 +6,7 @@ namespace WinForm_Chat_M2
         private bool isBusy = false;
         private string currentModel = "gpt-5-mini";
         // (Select button removed) currentModel is updated directly from combo
-        Gemini_SDK gemSdk;
+        Gemini_SDK gemini;
         OpenAI_SDK openai;
 
         public Form1()
@@ -14,7 +14,7 @@ namespace WinForm_Chat_M2
             InitializeComponent();
             // set initial model from combo
             currentModel = cmbModel.SelectedItem?.ToString() ?? currentModel;
-            gemSdk = new Gemini_SDK(currentModel);
+            gemini = new Gemini_SDK(currentModel);
             openai = new OpenAI_SDK(currentModel);
 
             AppendToHistory($"Model set to: {currentModel}\n");
@@ -46,18 +46,26 @@ namespace WinForm_Chat_M2
                 AppendToHistory("You: " + text + "\n");
                 txtInput.Clear();
                 var selectedModel = currentModel;
-                string reply;
+                //string reply;
+                AppendToHistory("AI: ");
                 if (!string.IsNullOrEmpty(selectedModel) && selectedModel.IndexOf("gemini", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    //var gemSdk = new Gemini_SDK(selectedModel);
-                    reply = await gemSdk.Call(text);
+                    // Stream response chunks from the chat model
+                    await foreach (var chunk in gemini.CallStream(text))
+                    {
+                        AppendToHistory(chunk + "\n");
+                    }
                 }
                 else
                 {
-                    //var openai = new OpenAI_SDK(selectedModel);
-                    reply = await openai.Call(text);
+                    // Stream response chunks from the chat model
+                    await foreach (var chunk in openai.CallStream(text))
+                    {
+                        AppendToHistory(chunk + "\n");
+                    }
                 }
-                AppendToHistory("AI: " + reply + "\n");
+                //AppendToHistory("AI: " + reply + "\n");
+                Console.WriteLine();
             }
             catch (Exception ex)
             {
@@ -91,7 +99,7 @@ namespace WinForm_Chat_M2
             if (selected == currentModel) return; // no change
 
             currentModel = selected;
-            gemSdk = new Gemini_SDK(currentModel);
+            gemini = new Gemini_SDK(currentModel);
             openai = new OpenAI_SDK(currentModel);
             AppendToHistory($"Model set to: {currentModel}\n");
         }
