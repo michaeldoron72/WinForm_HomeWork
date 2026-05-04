@@ -49,10 +49,11 @@ namespace WinForm_Chat_M3
 
         private async Task SendMessageAsync()
         {
-            if (isBusy) return;
-
             var message = txtInput.Text?.Trim();
             txtInput.Clear();
+
+            if (isBusy || string.IsNullOrEmpty(message)) return;
+
             isBusy = true;
             AppendToHistory("You: " + message + "\n");
             var selectedModel = currentModel;
