@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/App_Data/">
-    <File Path="../../../OneDrive - ganyavne.ort.org.il/השתלמות AI Programming CSharp/SK-Hishtalmot/SK-Hishtalmot/AI_Programming.ldf" />
-    <File Path="../../../OneDrive - ganyavne.ort.org.il/השתלמות AI Programming CSharp/SK-Hishtalmot/SK-Hishtalmot/AI_Programming.mdf" />
+    <File Path="AI_Programming.ldf" />
+    <File Path="AI_Programming.mdf" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="../../../OneDrive - ganyavne.ort.org.il/השתלמות AI Programming CSharp/SK-Hishtalmot/SK-Hishtalmot/Lesson_8_Tools/Gemini_SDK.cs" />
