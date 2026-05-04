@@ -37,6 +37,7 @@ namespace WinForm_Chat_M2
         private async Task SendMessageAsync()
         {
             if (isBusy) return;
+
             var text = txtInput.Text?.Trim();
             if (string.IsNullOrEmpty(text)) return;
 

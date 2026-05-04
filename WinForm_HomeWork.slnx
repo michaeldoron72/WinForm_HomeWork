@@ -1,8 +1,15 @@
 <Solution>
+  <Folder Name="/App_Data/">
+    <File Path="../../../OneDrive - ganyavne.ort.org.il/השתלמות AI Programming CSharp/SK-Hishtalmot/SK-Hishtalmot/AI_Programming.ldf" />
+    <File Path="../../../OneDrive - ganyavne.ort.org.il/השתלמות AI Programming CSharp/SK-Hishtalmot/SK-Hishtalmot/AI_Programming.mdf" />
+  </Folder>
   <Folder Name="/Solution Items/">
+    <File Path="../../../OneDrive - ganyavne.ort.org.il/השתלמות AI Programming CSharp/SK-Hishtalmot/SK-Hishtalmot/Lesson_8_Tools/Gemini_SDK.cs" />
+    <File Path="../../../OneDrive - ganyavne.ort.org.il/השתלמות AI Programming CSharp/SK-Hishtalmot/SK-Hishtalmot/Lesson_8_Tools/OpenAI_SDK_Response.cs" />
     <File Path=".env" />
     <File Path=".env_temp" />
   </Folder>
   <Project Path="WinForm_Chat_M1/WinForm_Chat_M1.csproj" />
   <Project Path="WinForm_Chat_M2/WinForm_Chat_M2.csproj" Id="12e86fb8-113d-4fdf-94e5-f88ff597d40e" />
+  <Project Path="WinForm_Chat_M3/WinForm_Chat_M3.csproj" Id="d743be40-c1d9-44f3-bbc0-a6b9be16aa2c" />
 </Solution>
