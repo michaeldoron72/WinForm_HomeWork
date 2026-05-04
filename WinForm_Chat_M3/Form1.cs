@@ -7,6 +7,7 @@ namespace WinForm_Chat_M3
 {
     public partial class Form1 : Form
     {
+        // new
         // No persistent SDK instance; create per-call to allow changing model easily
         private bool isBusy = false;
         private string currentModel = "gpt-5-mini";
