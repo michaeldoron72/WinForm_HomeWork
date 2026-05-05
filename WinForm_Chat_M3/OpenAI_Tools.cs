@@ -13,94 +13,12 @@ public class OpenAI_Tools
 
     public OpenAI_Tools(string model, string? schema = null)
     {
-        Initailize();
         var OpenAIKey = Environment.GetEnvironmentVariable("OpenAIKey");
         GPTModel = new ResponsesClient(OpenAIKey);
         this.model = model;
         this.systemPrompt = GetsystemPrompt();
-        this.tools = tools;
+        this.tools = CreateTools();
         this.schema = schema;
-    }
-
-    private void Initailize()
-    {
-        var noParamsSchema = BinaryData.FromString(
-            """
-            {
-                "type":"object", 
-                "properties":{}, 
-                "required":[], 
-                "additionalProperties":false 
-            }
-            """);
-
-        var tavilySchema = BinaryData.FromString(
-            """
-            { 
-                "type":"object", 
-                "properties":{"query":{"type":"string"}}, 
-                "required":["query"], 
-                "additionalProperties":false 
-            }
-            """);
-
-        var sqlSchema = BinaryData.FromString(
-            """
-            {
-                "type":"object",
-                "properties":{"sql":{"type":"string"}},
-                "required":["sql"],
-                "additionalProperties":false
-            }
-            """);
-
-        var getDateTool = ResponseTool.CreateFunctionTool(
-            functionName: "GetDate",
-            functionParameters: noParamsSchema,
-            strictModeEnabled: true,
-            functionDescription: "Get today's date"
-            );
-
-        var getTimeTool = ResponseTool.CreateFunctionTool(
-            functionName: "GetTime",
-            functionParameters: noParamsSchema,
-            strictModeEnabled: true,
-            functionDescription: "Get the current time");
-
-        var tavilyTool = ResponseTool.CreateFunctionTool(
-            functionName: "TavilySearch",
-            functionParameters: tavilySchema,
-            strictModeEnabled: true,
-            functionDescription: "Search the web and return results for a query");
-
-        var getSchemaTool = ResponseTool.CreateFunctionTool(
-            functionName: "GetSchema",
-            functionParameters: noParamsSchema,
-            strictModeEnabled: true,
-            functionDescription: "Get the structure of the SQL database");
-
-        var retrieveTableTool = ResponseTool.CreateFunctionTool(
-            functionName: "RetrieveTable",
-            functionParameters: sqlSchema,
-            strictModeEnabled: true,
-            functionDescription: "Run a SELECT query on the SQL database and return the result as JSON");
-
-        var executeNonQueryTool = ResponseTool.CreateFunctionTool(
-            functionName: "ExecuteNonQuery",
-            functionParameters: sqlSchema,
-            strictModeEnabled: true,
-            functionDescription: "Run INSERT, UPDATE, or DELETE on the SQL database " +
-            "and return the number of affected rows");
-
-        tools = new List<ResponseTool>
-        {
-                getDateTool,
-                getTimeTool,
-                tavilyTool,
-                getSchemaTool,
-                retrieveTableTool,
-                executeNonQueryTool
-        };
     }
 
     public Task<ResponseResult> Call(string userMessage)
@@ -185,5 +103,84 @@ public class OpenAI_Tools
                 Use ExecuteNonQuery only when the user explicitly asks to change data in the SQL database.
                 """;
         return systemPrompt;
+    }
+
+    private List<ResponseTool> CreateTools()
+    {
+        var noParamsSchema = BinaryData.FromString(
+            """
+            {
+                "type":"object", 
+                "properties":{}, 
+                "required":[], 
+                "additionalProperties":false 
+            }
+            """);
+
+        var tavilySchema = BinaryData.FromString(
+            """
+            { 
+                "type":"object", 
+                "properties":{"query":{"type":"string"}}, 
+                "required":["query"], 
+                "additionalProperties":false 
+            }
+            """);
+
+        var sqlSchema = BinaryData.FromString(
+            """
+            {
+                "type":"object",
+                "properties":{"sql":{"type":"string"}},
+                "required":["sql"],
+                "additionalProperties":false
+            }
+            """);
+
+        var getDateTool = ResponseTool.CreateFunctionTool(
+            functionName: "GetDate",
+            functionParameters: noParamsSchema,
+            strictModeEnabled: true,
+            functionDescription: "Get today's date"
+            );
+
+        var getTimeTool = ResponseTool.CreateFunctionTool(
+            functionName: "GetTime",
+            functionParameters: noParamsSchema,
+            strictModeEnabled: true,
+            functionDescription: "Get the current time");
+
+        var tavilyTool = ResponseTool.CreateFunctionTool(
+            functionName: "TavilySearch",
+            functionParameters: tavilySchema,
+            strictModeEnabled: true,
+            functionDescription: "Search the web and return results for a query");
+
+        var getSchemaTool = ResponseTool.CreateFunctionTool(
+            functionName: "GetSchema",
+            functionParameters: noParamsSchema,
+            strictModeEnabled: true,
+            functionDescription: "Get the structure of the SQL database");
+
+        var retrieveTableTool = ResponseTool.CreateFunctionTool(
+            functionName: "RetrieveTable",
+            functionParameters: sqlSchema,
+            strictModeEnabled: true,
+            functionDescription: "Run a SELECT query on the SQL database and return the result as JSON");
+
+        var executeNonQueryTool = ResponseTool.CreateFunctionTool(
+            functionName: "ExecuteNonQuery",
+            functionParameters: sqlSchema,
+            strictModeEnabled: true,
+            functionDescription: "Run INSERT, UPDATE, or DELETE on the SQL database " +
+            "and return the number of affected rows");
+
+
+        var codeInterpreterTool = ResponseTool.CreateCodeInterpreterTool(
+            new CodeInterpreterToolContainer(
+                CodeInterpreterToolContainerConfiguration.CreateAutomaticContainerConfiguration(
+                    Array.Empty<string>())));
+
+        return new List<ResponseTool> { getDateTool, getTimeTool, tavilyTool, getSchemaTool, retrieveTableTool, executeNonQueryTool, codeInterpreterTool };
     }
 }

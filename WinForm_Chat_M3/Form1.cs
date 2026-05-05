@@ -1,6 +1,7 @@
 #pragma warning disable OPENAI001
 using Google.GenAI.Types;
 using OpenAI.Responses;
+using System.ComponentModel;
 using System.Text.Json;
 
 namespace WinForm_Chat_M3
@@ -16,6 +17,7 @@ namespace WinForm_Chat_M3
         private DateTimeTools dtTools;
         private TavilySearch tavily;
         private SQLTools sqlTools;
+        private string? ContainerId { get; set; }
 
         public Form1()
         {
@@ -70,7 +72,8 @@ namespace WinForm_Chat_M3
 
                 for (int step = 0; step < maxSteps; step++)
                 {
-                    var parts = response.Candidates[0].Content.Parts;
+                    var content = response.Candidates[0].Content;
+                    var parts = content.Parts;
 
                     int count = 0;
                     var toolOutputMessage = new Content { Role = "user", Parts = new List<Part>() };
@@ -137,6 +140,8 @@ namespace WinForm_Chat_M3
                         }
                     }
 
+                    SaveGeminiFiles(content);
+
                     if (count == 0)
                     {
                         isBusy = false;
@@ -154,13 +159,16 @@ namespace WinForm_Chat_M3
                             Text = "Max tool steps reached. No more tool calls are allowed. Reply normally with your best final answer using the information you already have.\n"
                         });
                         response = await gemini.Call(new List<Content> { toolOutputMessage });
-
+                        SaveGeminiFiles(response.Candidates[0].Content);
+                        
                         var textPart = response.Candidates[0].Content.Parts.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.Text));
                         AppendToHistory(textPart?.Text ?? string.Empty + "\n");
                         finalResponsePrinted = true;
                         break;
                     }
-                    response = await gemini.Call(new List<Content> { toolOutputMessage });
+                    response = toolOutputMessage.Parts.Count > 0
+                        ? await gemini.Call(new List<Content> { toolOutputMessage })
+                        : await gemini.Call(new List<Content>());
 
                     if (!finalResponsePrinted)
                     {
@@ -184,7 +192,10 @@ namespace WinForm_Chat_M3
                         if (item is FunctionCallResponseItem)
                         {
                             count++;
-                            var call = (FunctionCallResponseItem)item;
+                        }
+                        if (item is FunctionCallResponseItem call)
+                        {
+                            count++;
                             string toolResult;
 
                             try
@@ -251,6 +262,7 @@ namespace WinForm_Chat_M3
                             "Max tool steps reached. No more tool calls are allowed. Reply normally with your best final answer using the information you already have."));
 
                         response = await openAI.Call(toolOutputs);
+                        SaveOpenAIFiles(response);
                         AppendToHistory(response.GetOutputText() ?? string.Empty + "\n");
                         finalResponsePrinted = true;
                         break;
@@ -291,6 +303,159 @@ namespace WinForm_Chat_M3
             gemini.UpdateModel(currentModel);
 
             AppendToHistory($"Model set to: {currentModel}\n");
+        }
+        private static void SaveGeminiFiles(Content content)
+        {
+            if (content.Parts is null) return;
+
+            foreach (var part in content.Parts)
+            {
+                if (part.InlineData is not null
+                    && part.InlineData.MimeType is string mime
+                    && mime.StartsWith("image/", StringComparison.OrdinalIgnoreCase)
+                    && part.InlineData.Data is byte[] bytes
+                    && bytes.Length > 0)
+                {
+                    SaveGeminiImage(bytes, mime);
+                }
+            }
+        }
+
+        private void SaveOpenAIFiles(ResponseResult response)
+        {
+            foreach (var item in response.OutputItems)
+            {
+                if (item is CodeInterpreterCallResponseItem ci)
+                {
+                    if (!string.IsNullOrWhiteSpace(ci.ContainerId))
+                    {
+                        ContainerId = ci.ContainerId;
+                    }
+
+                    foreach (var output in ci.Outputs)
+                    {
+                        if (output is CodeInterpreterCallImageOutput image)
+                        {
+                            SaveOpenAIImage(image.ImageUri, ci.ContainerId);
+                        }
+                    }
+                }
+                else if (item is MessageResponseItem msg)
+                {
+                    foreach (var part in msg.Content)
+                    {
+                        foreach (var annotation in part.OutputTextAnnotations)
+                        {
+                            if (annotation is not ContainerFileCitationMessageAnnotation file)
+                            {
+                                continue;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(file.ContainerId))
+                            {
+                                ContainerId = file.ContainerId;
+                            }
+
+                            SaveContainerFile(file.ContainerId, file.FileId, file.Filename);
+                        }
+
+                        var imageUriProperty = part.GetType().GetProperty("ImageUri");
+                        if (imageUriProperty?.GetValue(part) is Uri imageUri)
+                        {
+                            SaveOpenAIImage(imageUri, ContainerId);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void SaveGeminiImage(byte[] bytes, string mime)
+        {
+            var ext = mime.Split('/').Last();
+            var fileName = $"plot_{DateTime.Now:yyyyMMdd_HHmmss_fff}.{ext}";
+            var folder = Path.GetFullPath(
+                Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Plots"));
+            Directory.CreateDirectory(folder);
+            var fullPath = Path.Combine(folder, fileName);
+            System.IO.File.WriteAllBytes(fullPath, bytes);
+            Console.WriteLine($"[Image saved: {fullPath}]");
+        }
+
+        private static void SaveOpenAIImage(Uri imageUri, string? containerId)
+        {
+            try
+            {
+                var path = imageUri.AbsolutePath;
+                var ext = Path.GetExtension(path);
+                if (string.IsNullOrEmpty(ext)) ext = ".png";
+
+                using var http = new HttpClient();
+                var apiKey = System.Environment.GetEnvironmentVariable("OpenAIKey");
+                if (!string.IsNullOrEmpty(apiKey))
+                {
+                    http.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+                }
+                if (!string.IsNullOrEmpty(containerId))
+                {
+                    http.DefaultRequestHeaders.Add("OpenAI-Container", containerId);
+                }
+
+                var bytes = http.GetByteArrayAsync(imageUri).GetAwaiter().GetResult();
+
+                var fileName = $"plot_{DateTime.Now:yyyyMMdd_HHmmss_fff}{ext}";
+                var folder = Path.GetFullPath(
+                    Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Plots"));
+                Directory.CreateDirectory(folder);
+                var fullPath = Path.Combine(folder, fileName);
+                System.IO.File.WriteAllBytes(fullPath, bytes);
+                Console.WriteLine($"[Image saved: {fullPath}]");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Image save failed: {ex.Message}]");
+            }
+        }
+
+        private static void SaveContainerFile(string? containerId, string? fileId, string? filename)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(containerId) || string.IsNullOrWhiteSpace(fileId))
+                {
+                    Console.WriteLine("[File save failed: missing container id or file id]");
+                    return;
+                }
+
+                using var http = new HttpClient();
+                var apiKey = System.Environment.GetEnvironmentVariable("OpenAIKey");
+                if (!string.IsNullOrEmpty(apiKey))
+                {
+                    http.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+                }
+
+                http.DefaultRequestHeaders.Add("OpenAI-Container", containerId);
+
+                var uri = new Uri($"https://api.openai.com/v1/containers/{containerId}/files/{fileId}/content");
+                var bytes = http.GetByteArrayAsync(uri).GetAwaiter().GetResult();
+
+                var safeName = string.IsNullOrWhiteSpace(filename)
+                    ? $"file_{DateTime.Now:yyyyMMdd_HHmmss_fff}.bin"
+                    : Path.GetFileName(filename);
+
+                var folder = Path.GetFullPath(
+                    Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Plots"));
+                Directory.CreateDirectory(folder);
+
+                var fullPath = Path.Combine(folder, $"{DateTime.Now:yyyyMMdd_HHmmss_fff}_{safeName}");
+                System.IO.File.WriteAllBytes(fullPath, bytes);
+                Console.WriteLine($"[File saved: {fullPath}]");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[File save failed: {ex.Message}]");
+            }
         }
     }
 }
