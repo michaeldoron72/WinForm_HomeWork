@@ -12,4 +12,5 @@
   <Project Path="WinForm_Chat_M1/WinForm_Chat_M1.csproj" />
   <Project Path="WinForm_Chat_M2/WinForm_Chat_M2.csproj" Id="12e86fb8-113d-4fdf-94e5-f88ff597d40e" />
   <Project Path="WinForm_Chat_M3/WinForm_Chat_M3.csproj" Id="d743be40-c1d9-44f3-bbc0-a6b9be16aa2c" />
+  <Project Path="WinForm_Chat_M4/WinForm_Chat_M4.csproj" Id="8d2642c5-1be3-4202-9307-3552571cd063" />
 </Solution>
