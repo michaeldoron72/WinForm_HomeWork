@@ -4,7 +4,7 @@ using OpenAI.Responses;
 using System.ComponentModel;
 using System.Text.Json;
 
-namespace WinForm_Chat_M3
+namespace WinForm_Chat_M4
 {
     public partial class Form1 : Form
     {
@@ -18,6 +18,7 @@ namespace WinForm_Chat_M3
         private TavilySearch tavily;
         private SQLTools sqlTools;
         private string? ContainerId { get; set; }
+        private int image_counter = 0;
 
         public Form1()
         {
@@ -138,6 +139,10 @@ namespace WinForm_Chat_M3
                                 }
                             });
                         }
+                        else if (part.ExecutableCode is not null || part.CodeExecutionResult is not null)
+                        {
+                            count++;
+                        }
                     }
 
                     SaveGeminiFiles(content);
@@ -160,7 +165,7 @@ namespace WinForm_Chat_M3
                         });
                         response = await gemini.Call(new List<Content> { toolOutputMessage });
                         SaveGeminiFiles(response.Candidates[0].Content);
-                        
+
                         var textPart = response.Candidates[0].Content.Parts.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.Text));
                         AppendToHistory(textPart?.Text ?? string.Empty + "\n");
                         finalResponsePrinted = true;
@@ -170,10 +175,6 @@ namespace WinForm_Chat_M3
                         ? await gemini.Call(new List<Content> { toolOutputMessage })
                         : await gemini.Call(new List<Content>());
 
-                    if (!finalResponsePrinted)
-                    {
-                        Console.WriteLine("Max iterations reached.\n");
-                    }
                 }
                 AppendToHistory(string.Empty + "\n");
             }
@@ -269,13 +270,17 @@ namespace WinForm_Chat_M3
                     }
 
                     response = await openAI.Call(toolOutputs);
-
-                    if (!finalResponsePrinted)
-                    {
-                        Console.WriteLine("Max iterations reached.");
-                    }
                 }
                 AppendToHistory(string.Empty + "\n");
+            }
+            else if (currentModel.Contains("imagen"))
+            {
+                var imgGen = new GoogleImg();
+                string generatedImageName = $"generatedImage_{image_counter}.png";
+                await imgGen.GenerateImageAsync(message, generatedImageName);
+                AppendToHistory("Image " + generatedImageName + " is created successfully!\n");
+                isBusy = false;
+                image_counter++;
             }
         }
 

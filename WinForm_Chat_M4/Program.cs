@@ -1,6 +1,6 @@
 using DotNetEnv;
 
-namespace WinForm_Chat_M3
+namespace WinForm_Chat_M4
 {
     internal static class Program
     {

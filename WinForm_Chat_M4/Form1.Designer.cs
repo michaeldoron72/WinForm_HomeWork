@@ -1,6 +1,6 @@
 ﻿using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
-namespace WinForm_Chat_M3
+namespace WinForm_Chat_M4
 {
     partial class Form1
     {
@@ -30,84 +30,73 @@ namespace WinForm_Chat_M3
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            this.rtbHistory = new System.Windows.Forms.RichTextBox();
-            this.txtInput = new System.Windows.Forms.TextBox();
-            this.btnSend = new System.Windows.Forms.Button();
+            rtbHistory = new RichTextBox();
+            txtInput = new TextBox();
+            btnSend = new Button();
+            lblModel = new Label();
+            cmbModel = new ComboBox();
             SuspendLayout();
             // 
             // rtbHistory
             // 
-            this.rtbHistory.Location = new System.Drawing.Point(12, 44);
-            this.rtbHistory.Name = "rtbHistory";
-            this.rtbHistory.ReadOnly = true;
-            this.rtbHistory.BackColor = System.Drawing.Color.LightYellow;
-            this.rtbHistory.Size = new System.Drawing.Size(776, 609);
-            this.rtbHistory.TabIndex = 0;
-            this.rtbHistory.Text = string.Empty;
+            rtbHistory.BackColor = Color.LightYellow;
+            rtbHistory.Location = new Point(12, 44);
+            rtbHistory.Name = "rtbHistory";
+            rtbHistory.ReadOnly = true;
+            rtbHistory.Size = new Size(776, 609);
+            rtbHistory.TabIndex = 0;
+            rtbHistory.Text = "";
             // 
             // txtInput
             // 
-            this.txtInput.Location = new System.Drawing.Point(12, 659);
-            this.txtInput.Name = "txtInput";
-            this.txtInput.BackColor = System.Drawing.Color.LightGray;
-            this.txtInput.ForeColor = System.Drawing.Color.Purple;
-            this.txtInput.Size = new System.Drawing.Size(680, 23);
-            this.txtInput.TabIndex = 1;
-            this.txtInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtInput_KeyDown);
+            txtInput.BackColor = Color.LightGray;
+            txtInput.ForeColor = Color.Purple;
+            txtInput.Location = new Point(12, 659);
+            txtInput.Name = "txtInput";
+            txtInput.Size = new Size(680, 27);
+            txtInput.TabIndex = 1;
+            txtInput.KeyDown += txtInput_KeyDown;
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(698, 661);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(90, 27);
-            this.btnSend.TabIndex = 2;
-            this.btnSend.Text = "Send";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            btnSend.Location = new Point(698, 661);
+            btnSend.Name = "btnSend";
+            btnSend.Size = new Size(90, 27);
+            btnSend.TabIndex = 2;
+            btnSend.Text = "Send";
+            btnSend.UseVisualStyleBackColor = true;
+            btnSend.Click += btnSend_Click;
             // 
             // lblModel
             // 
-            this.lblModel = new System.Windows.Forms.Label();
-            this.lblModel.AutoSize = true;
-            this.lblModel.Location = new System.Drawing.Point(12, 14);
-            this.lblModel.Name = "lblModel";
-            this.lblModel.Size = new System.Drawing.Size(42, 15);
-            this.lblModel.TabIndex = 3;
-            this.lblModel.Text = "Model:";
+            lblModel.AutoSize = true;
+            lblModel.Location = new Point(12, 14);
+            lblModel.Name = "lblModel";
+            lblModel.Size = new Size(55, 20);
+            lblModel.TabIndex = 3;
+            lblModel.Text = "Model:";
             // 
             // cmbModel
             // 
-            this.cmbModel = new System.Windows.Forms.ComboBox();
-            this.cmbModel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbModel.FormattingEnabled = true;
-            this.cmbModel.Items.AddRange(new object[] {
-            "gpt-5-mini",
-            "gpt-5-nano",
-            "gemini-2.5-pro",
-            "gemini-2.5-flash",
-            "gemini-3.1-flash-lite-preview",
-            "gemini-3.1-pro-preview"});
-            this.cmbModel.Location = new System.Drawing.Point(70, 10);
-            this.cmbModel.Name = "cmbModel";
-            this.cmbModel.Size = new System.Drawing.Size(200, 23);
-            this.cmbModel.TabIndex = 4;
-            this.cmbModel.SelectedIndex = 0;
-            this.cmbModel.SelectedIndexChanged += new System.EventHandler(this.cmbModel_SelectedIndexChanged);
-            // 
-            // btnSelectModel
-            // (Select button removed)
+            cmbModel.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbModel.FormattingEnabled = true;
+            cmbModel.Items.AddRange(new object[] { "gpt-5-mini", "gpt-5-nano", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-3.1-flash-lite-preview", "gemini-3.1-pro-preview", "imagen-4.0-generate-001" });
+            cmbModel.Location = new Point(70, 10);
+            cmbModel.Name = "cmbModel";
+            cmbModel.Size = new Size(200, 28);
+            cmbModel.TabIndex = 4;
+            cmbModel.SelectedIndexChanged += cmbModel_SelectedIndexChanged;
             // 
             // Form1
             // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            //ClientSize = new System.Drawing.Size(800, 415);
-            ClientSize = new System.Drawing.Size(800, 700);
-            Controls.Add(this.btnSend);
-            Controls.Add(this.txtInput);
-            Controls.Add(this.rtbHistory);
-            Controls.Add(this.cmbModel);
-            Controls.Add(this.lblModel);
+            ClientSize = new Size(800, 700);
+            Controls.Add(btnSend);
+            Controls.Add(txtInput);
+            Controls.Add(rtbHistory);
+            Controls.Add(cmbModel);
+            Controls.Add(lblModel);
             Name = "Form1";
             Text = "AI Chat with history and six tools";
             ResumeLayout(false);

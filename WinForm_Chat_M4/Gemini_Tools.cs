@@ -78,7 +78,7 @@ public class Gemini_Tools
     {
         var systemPrompt = 
             """
-            
+      
                 You may call tools when needed.
                 Use GetDate to get today's date.
                 Use GetTime to get the current time.
