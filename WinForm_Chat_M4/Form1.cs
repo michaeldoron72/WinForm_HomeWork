@@ -25,6 +25,7 @@ namespace WinForm_Chat_M4
             InitializeComponent();
             // set initial model from combo
             currentModel = cmbModel.SelectedItem?.ToString() ?? currentModel;
+            cmbModel.Text = currentModel;
 
             dtTools = new DateTimeTools();
             tavily = new TavilySearch();
@@ -34,6 +35,19 @@ namespace WinForm_Chat_M4
             openAI = new OpenAI_Tools(model: currentModel);
 
             AppendToHistory($"Model set to: {currentModel}\n");
+
+            if (currentModel.Contains("imagen"))
+            {
+                AppendToHistory("\nWelcome to Google Image Creator. Write your prompt and press Enter or click Send.\n");
+            }
+            else if (currentModel.Contains("gpt-image"))
+            {
+                AppendToHistory("\nWelcome to OpenAI Image Creator. Write your prompt and press Enter or click Send.\n");
+            }
+            else
+            {
+                AppendToHistory("\nWelcome to the chat! Write your message and press Enter or click Send.\n");
+            }
         }
 
         private async void btnSend_Click(object? sender, EventArgs e)
@@ -178,6 +192,20 @@ namespace WinForm_Chat_M4
                 }
                 AppendToHistory(string.Empty + "\n");
             }
+            else if (currentModel.Contains("gpt-image"))
+            {
+                var imgGen = new OpenAI_Img();
+                string generatedImageName = $"generatedImage_{image_counter}.png";
+                while (imgGen.IsExist(generatedImageName))
+                {
+                    image_counter++;
+                    generatedImageName = $"generatedImage_{image_counter}.png";
+                }
+                await imgGen.GenerateImageAsync(message, generatedImageName);
+                AppendToHistory("Image " + generatedImageName + " is created successfully!\n");
+                isBusy = false;
+                image_counter++;
+            }
             else if (currentModel.Contains("gpt"))
             {
                 var response = await openAI.Call(message);
@@ -277,6 +305,11 @@ namespace WinForm_Chat_M4
             {
                 var imgGen = new GoogleImg();
                 string generatedImageName = $"generatedImage_{image_counter}.png";
+                while (imgGen.IsExist(generatedImageName))
+                {
+                    image_counter++;
+                    generatedImageName = $"generatedImage_{image_counter}.png";
+                }
                 await imgGen.GenerateImageAsync(message, generatedImageName);
                 AppendToHistory("Image " + generatedImageName + " is created successfully!\n");
                 isBusy = false;
@@ -308,7 +341,21 @@ namespace WinForm_Chat_M4
             gemini.UpdateModel(currentModel);
 
             AppendToHistory($"Model set to: {currentModel}\n");
+
+            if (currentModel.Contains("imagen"))
+            {
+                AppendToHistory("\nWelcome to Google Image Creator. Write your prompt and press Enter or click Send.\n");
+            }
+            else if (currentModel.Contains("gpt-image"))
+            {
+                AppendToHistory("\nWelcome to OpenAI Image Creator. Write your prompt and press Enter or click Send.\n");
+            }
+            else
+            {
+                AppendToHistory("\nWelcome to the chat! Write your message and press Enter or click Send.\n");
+            }
         }
+
         private static void SaveGeminiFiles(Content content)
         {
             if (content.Parts is null) return;

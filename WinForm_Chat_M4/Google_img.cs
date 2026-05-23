@@ -31,7 +31,17 @@ public class GoogleImg
 
         string savePath = Path.Combine(_imgFolder, fileName);
         await System.IO.File.WriteAllBytesAsync(savePath, imageBytes);
-        Console.WriteLine($"Generated: {Path.GetFullPath(savePath)}");
+        //Console.WriteLine($"Generated: {Path.GetFullPath(savePath)}");
         return imageBytes;
+    }
+
+    public bool IsExist(string fileName)
+    {
+        string savePath = Path.Combine(_imgFolder, fileName);
+        if (System.IO.File.Exists(savePath))
+        {
+            return true;
+        }
+        return false;
     }
 }

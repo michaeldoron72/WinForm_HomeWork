@@ -4,8 +4,6 @@
     <File Path="AI_Programming.mdf" />
   </Folder>
   <Folder Name="/Solution Items/">
-    <File Path="../../../OneDrive - ganyavne.ort.org.il/השתלמות AI Programming CSharp/SK-Hishtalmot/SK-Hishtalmot/Lesson_8_Tools/Gemini_SDK.cs" />
-    <File Path="../../../OneDrive - ganyavne.ort.org.il/השתלמות AI Programming CSharp/SK-Hishtalmot/SK-Hishtalmot/Lesson_8_Tools/OpenAI_SDK_Response.cs" />
     <File Path=".env" />
     <File Path=".env_temp" />
   </Folder>
