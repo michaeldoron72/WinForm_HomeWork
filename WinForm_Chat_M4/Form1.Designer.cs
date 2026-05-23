@@ -98,7 +98,7 @@ namespace WinForm_Chat_M4
             Controls.Add(cmbModel);
             Controls.Add(lblModel);
             Name = "Form1";
-            Text = "AI Chat with history and tools include image tool ver 2.5";
+            Text = "AI Chat with history and tools include image tool ver 3.0";
             ResumeLayout(false);
             PerformLayout();
         }

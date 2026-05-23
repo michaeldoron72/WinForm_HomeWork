@@ -13,7 +13,7 @@ public class GoogleImg
         Env.TraversePath().Load();
         var apiKey = System.Environment.GetEnvironmentVariable("GeminiAPIKey");
         _imageClient = new Client(apiKey: apiKey);
-        _imgFolder = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Img");
+        _imgFolder = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "Image");
         Model = model;
     }
     
