@@ -80,7 +80,7 @@ namespace WinForm_Chat_M4
             // 
             cmbModel.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbModel.FormattingEnabled = true;
-            cmbModel.Items.AddRange(new object[] { "gpt-5-mini", "gpt-5-nano", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-3.1-flash-lite-preview", "gemini-3.1-pro-preview", "imagen-4.0-generate-001", "gpt-image-1" });
+            cmbModel.Items.AddRange(new object[] { "gpt-5-mini", "gpt-5-nano", "gemini-3.1-flash-lite-preview", "gemini-3.1-pro-preview", "imagen-4.0-generate-001", "gpt-image-1" });
             cmbModel.Location = new Point(120, 10);
             cmbModel.Name = "cmbModel";
             cmbModel.Size = new Size(200, 28);
@@ -98,7 +98,7 @@ namespace WinForm_Chat_M4
             Controls.Add(cmbModel);
             Controls.Add(lblModel);
             Name = "Form1";
-            Text = "AI Chat with history and tools include image tool ver 3.0";
+            Text = "AI Chat with history and tools include image tool ver 3.5";
             ResumeLayout(false);
             PerformLayout();
         }
